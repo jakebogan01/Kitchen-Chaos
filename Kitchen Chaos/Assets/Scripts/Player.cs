@@ -26,10 +26,20 @@ public class Player : MonoBehaviour
             inputVector.x += 1;
         }
 
+        /*****
+         * normalized evens the movement speed of character at an angle
+        *****/
         inputVector = inputVector.normalized;
 
         Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y);
         transform.position += moveDir * movementSpeed * Time.deltaTime;
-        transform.forward = moveDir;
+
+        /*****
+         * allows characters to rotate direction smoothly
+         * Slerp spherical interpolations
+         * Slerp(a, b, t) t returns the difference between point a (starting point vector) and b (target point vector)
+        *****/
+        float characterRotateSpeed = 10f;
+        transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * characterRotateSpeed);
     }
 }
