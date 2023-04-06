@@ -6,9 +6,51 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private float playerMovementSpeed = 7f;
     [SerializeField] private GameInput gameInput; //references GameInput script *
+    [SerializeField] private LayerMask countersLayerMask;
     private bool isPlayerWalking;
+    private Vector3 lastInteractDir;
 
     private void Update() {
+        HandleMovement();
+        HandleInteractions();
+    }
+
+    /*****
+    * Access for PlayerAnimator script
+    * returns true or false
+    *****/
+    public bool IsWalking() {
+        return isPlayerWalking;
+    }
+
+    private void HandleInteractions() {
+        /*****
+        * detects if & what gameobject tranform/rigidbody the player collided with
+        *****/
+        Vector2 inputVector = gameInput.GetMovementVectorNormalized();
+
+        Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y); //don't want to make this global because it will interfere with the HandleMovement function *
+
+        //if players last movement is not (0,0,0) then store the last direction *
+        if (moveDir != Vector3.zero) {
+            lastInteractDir = moveDir;
+        }
+
+        float interactDistance = 2f;
+        //the raycast below detects the gameobject the player collides with *
+        if (Physics.Raycast(transform.position, lastInteractDir, out RaycastHit raycastHit, interactDistance, countersLayerMask)) {
+            /*****
+            * TryGetComponent is similiar to GetComponent but it handles checking for null
+            * the raycastHit can detect which gameobject specifically the player hits
+            *****/
+            if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter)) {
+                //has clearcounter *
+                clearCounter.Interact();
+            }
+        }
+    }
+
+    private void HandleMovement() {
         Vector2 inputVector = gameInput.GetMovementVectorNormalized();
 
         Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y);
@@ -68,13 +110,5 @@ public class Player : MonoBehaviour
         *****/
         float playerRotateSpeed = 10f;
         transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * playerRotateSpeed);
-    }
-
-    /*****
-    * Access for PlayerAnimator script
-    * returns true or false
-    *****/
-    public bool IsWalking() {
-        return isPlayerWalking;
     }
 }
