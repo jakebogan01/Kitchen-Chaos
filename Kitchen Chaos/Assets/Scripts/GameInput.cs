@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameInput : MonoBehaviour
 {
+    public event EventHandler OnInteractAction;
     private PlayerInputActions playerInputActions;
 
     private void Awake() {
@@ -13,6 +15,14 @@ public class GameInput : MonoBehaviour
         *****/
         playerInputActions = new PlayerInputActions();
         playerInputActions.Player.Enable();
+
+        //fires Interact_performed function when player hits the interactive button (E) *
+        playerInputActions.Player.Interact.performed += Interact_performed;
+    }
+
+    private void Interact_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        //fires the event listener for subscribers to listen to *
+        OnInteractAction?.Invoke(this, EventArgs.Empty); //?.Invoke is the ternary operator for null *
     }
 
     /*****

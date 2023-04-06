@@ -10,6 +10,39 @@ public class Player : MonoBehaviour
     private bool isPlayerWalking;
     private Vector3 lastInteractDir;
 
+    private void Start() {
+        //listens for event listener when player hits the interactive button (E) *
+        gameInput.OnInteractAction += GameInput_OnInteractAction;
+    }
+
+    /*****
+    * fires function once interactive button (E) has been hit
+    * detects if & what gameobject tranform/rigidbody the player collided with
+    *****/
+    private void GameInput_OnInteractAction(object sender, System.EventArgs e) {
+        Vector2 inputVector = gameInput.GetMovementVectorNormalized();
+
+        Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y); //don't want to make this global because it will interfere with the HandleMovement function *
+
+        //if players last movement is not (0,0,0) then store the last direction *
+        if (moveDir != Vector3.zero) {
+            lastInteractDir = moveDir;
+        }
+
+        float interactDistance = 2f;
+        //the raycast below detects the gameobject the player collides with *
+        if (Physics.Raycast(transform.position, lastInteractDir, out RaycastHit raycastHit, interactDistance, countersLayerMask)) {
+            /*****
+            * TryGetComponent is similiar to GetComponent but it handles checking for null
+            * the raycastHit can detect which gameobject specifically the player hits
+            *****/
+            if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter)) {
+                //has clearcounter *
+                clearCounter.Interact();
+            }
+        }
+    }
+
     private void Update() {
         HandleMovement();
         HandleInteractions();
@@ -45,7 +78,6 @@ public class Player : MonoBehaviour
             *****/
             if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter)) {
                 //has clearcounter *
-                clearCounter.Interact();
             }
         }
     }
