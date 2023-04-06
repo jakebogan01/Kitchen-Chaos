@@ -24,9 +24,8 @@ public class GameInput : MonoBehaviour
 
         /*****
         * normalized makes the player move diagenally at the same speed as WASD directions
-        * commented out because I have it enabled in the input actions Processors
         *****/
-        //inputVector = inputVector.normalized;
+        inputVector = inputVector.normalized;
 
         return inputVector;
     }
