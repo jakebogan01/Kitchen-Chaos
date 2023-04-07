@@ -21,7 +21,7 @@ public class GameInput : MonoBehaviour
     }
 
     private void Interact_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
-        //fires the event listener for subscribers to listen to *
+        //fires the event listener for subscribers who are listeners of the event *
         OnInteractAction?.Invoke(this, EventArgs.Empty); //?.Invoke is the ternary operator for null *
     }
 
